@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/auto-profile-readme/static/css/main.560b1185.css",
+    "main.js": "/auto-profile-readme/static/js/main.9bb38ae3.js",
+    "index.html": "/auto-profile-readme/index.html",
+    "main.560b1185.css.map": "/auto-profile-readme/static/css/main.560b1185.css.map",
+    "main.9bb38ae3.js.map": "/auto-profile-readme/static/js/main.9bb38ae3.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.560b1185.css",
+    "static/js/main.9bb38ae3.js"
+  ]
+}
