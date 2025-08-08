@@ -1,0 +1,105 @@
+/* 布局预览样式 */
+.layout-preview {
+  display: flex;
+
+  gap: 10px;
+}
+
+.layout-column {
+  flex: 1;
+  padding: 10px;
+  border: 1px dashed #d1d5da;
+  border-radius: 4px;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* 左右布局样式 */
+.double-column {
+  display: flex;
+  margin: 20px 0;
+
+  gap: 20px;
+}
+
+.column {
+  flex: 1;
+  padding: 15px;
+  min-height: 200px;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+}
+
+.left-column {
+  margin-right: 10px;
+}
+
+.right-column {
+  margin-left: 10px;
+}
+
+/* 主放置区域样式 */
+.main-drop-area {
+  margin-top: 10px;
+  padding: 16px;
+  min-height: 100px;
+  border: 2px dashed #d1d5da;
+  border-radius: 4px;
+}
+
+.over {
+  border-color: #0366d6;
+  background-color: #ebeced;
+}
+
+/* 元素包装器 */
+.elements-container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+
+  gap: 10px;
+}
+
+.element-wrapper {
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+/* 内容区域样式 */
+.content-area {
+  margin: 10px 0;
+  width: 100%;
+}
+
+.content-area-drop-zone {
+  margin-top: 5px;
+  padding: 10px;
+  border: 1px dashed #d1d5da;
+  border-radius: 4px;
+  background-color: #f6f8fa;
+}
+
+/* 多列内容区域样式 */
+.elements-container .content-area {
+  flex: 1 1 calc(50% - 10px); /* 默认为两列 */
+  min-width: 200px;
+}
+
+/* 当容器宽度较小时，自动调整为单列 */
+@media (max-width: 600px) {
+  .elements-container .content-area {
+    flex: 1 1 100%;
+  }
+}
+
+/* 拖放区域提示文本样式 */
+.drop-zone-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  color: #6b7280;
+  text-align: center;
+  font-size: 14px;
+}

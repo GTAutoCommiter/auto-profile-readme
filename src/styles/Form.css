@@ -1,0 +1,55 @@
+/* 自定义元素表单样式 */
+.custom-element-form {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+  gap: 10px;
+}
+
+.custom-element-form h4 {
+  margin-bottom: 10px;
+  color: #24292e;
+}
+
+.custom-element-form select,
+.custom-element-form input {
+  padding: 10px;
+  border: 1px solid #d1d5da;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.custom-element-form button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #28a745;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.custom-element-form button:hover {
+  background-color: #218838;
+}
+
+/* 导出按钮样式 */
+.export-button {
+  padding: 12px 24px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 6px;
+  background-color: #0366d6;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.export-button:hover {
+  background-color: #0252aa;
+}

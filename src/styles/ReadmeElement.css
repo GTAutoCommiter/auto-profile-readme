@@ -1,0 +1,110 @@
+/* 不同类型元素的样式 */
+.readme-element h1 {
+  margin-top: 0;
+  margin-bottom: 0.67em;
+  color: #24292e;
+  font-weight: 600;
+  font-size: 2em;
+}
+
+.readme-element h2 {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #eaecef;
+  color: #24292e;
+  font-weight: 600;
+  font-size: 1.5em;
+}
+
+.readme-element p {
+  margin-top: 0;
+  margin-bottom: 1em;
+  color: #24292e;
+}
+
+.readme-element ul {
+  margin-top: 0;
+  margin-bottom: 1em;
+  padding-left: 2em;
+}
+
+.readme-element li {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+  color: #24292e;
+}
+
+.readme-element pre {
+  overflow: auto;
+  margin-top: 0;
+  margin-bottom: 1em;
+  padding: 16px;
+  border-radius: 3px;
+  background-color: #f6f8fa;
+  font-size: 85%;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  line-height: 1.5;
+}
+
+.readme-element code {
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  background-color: #f6f8fa;
+  font-size: 85%;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+.readme-element img {
+  box-sizing: content-box;
+  margin-top: 0;
+  margin-bottom: 1em;
+  max-width: 100%;
+  background-color: #fff;
+}
+
+
+/* 内容区域样式 */
+.readme-content-area {
+  padding: 10px;
+  border: 1px solid #d1d5da;
+  border-radius: 6px;
+  background-color: #f9fafb;
+}
+
+.content-area-header {
+  padding: 8px 0;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #24292e;
+  border-bottom: 1px solid #eaecef;
+}
+
+/* 移除按钮样式 */
+.remove-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  padding: 2px 6px;
+  border: none;
+  border-radius: 3px;
+  background-color: #f6f8fa;
+  color: #6b7280;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.remove-button:hover {
+  background-color: #ebeced;
+  color: #d1d5da;
+}
+
+.readme-element {
+  position: relative;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  background-color: #fff;
+  transition: border-color 0.2s;
+}

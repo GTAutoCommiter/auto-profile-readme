@@ -1,0 +1,38 @@
+/* 可拖拽元素样式 - 模仿GitHub README样式 */
+.draggable-element {
+  padding: 12px;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  background-color: #ffffff;
+  cursor: move;
+  transition: all 0.2s;
+}
+
+.draggable-element:hover {
+  border-color: #d1d5da;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+
+/* 内容区域预览样式 */
+.content-area-preview {
+  width: 100%;
+  padding: 10px;
+  border: 1px dashed #d1d5da;
+  border-radius: 4px;
+  background-color: #f9fafb;
+}
+
+.content-area-header-preview {
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #24292e;
+}
+
+.content-area-placeholder {
+  color: #6b7280;
+  font-size: 12px;
+  text-align: center;
+  padding: 10px 0;
+}
