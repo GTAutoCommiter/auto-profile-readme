@@ -76,10 +76,7 @@ export const useStore = () => {
   return store;
 };
 
-// 创建store实例
-const elementStore = new ElementStore();
-const store = {
-  elementStore
-};
+// 创建store实例 - 使用RootStore
+const store = new RootStore();
 
 export default store;
