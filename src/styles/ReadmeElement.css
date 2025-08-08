@@ -67,9 +67,22 @@
 /* 内容区域样式 */
 .readme-content-area {
   padding: 10px;
-  border: 1px solid #d1d5da;
+  border: 1px dashed #d1d5da; /* 改为虚线边框 */
   border-radius: 6px;
   background-color: #f9fafb;
+}
+
+/* 为内容区域容器添加样式 */
+.content-area-container {
+  width: 100%;
+  min-height: 100px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* 非编辑状态下的内容区域标签样式 */
+.content-area-label {
+  display: none; /* 隐藏标签文本，只显示子元素 */
 }
 
 .content-area-header {
@@ -141,4 +154,55 @@
 
 .edit-buttons button:hover {
   background-color: #e0e0e0;
+}
+
+
+/* 内容区域容器样式 */
+.content-area-container {
+  width: 100%;
+  min-height: 100px;
+  border: 1px dashed #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  margin-bottom: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* 内容区域编辑状态 */
+.content-area-editing {
+  border: 2px dashed #007bff;
+  background-color: #e6f2ff;
+}
+
+/* 内容区域标签 */
+.content-area-label {
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+  padding: 10px 0;
+}
+
+/* 内容区域保存按钮 */
+.content-area-save-button {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+/* 修改现有内容区域样式 */
+.readme-content-area {
+  padding: 5px;
+  margin: 5px 0;
+}
+
+.content-area-edit {
+  padding: 10px;
+}
+
+.content-area-edit p {
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #666;
 }

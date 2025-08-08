@@ -21,10 +21,10 @@ const RenderElements = ({ elements, onRemove, onEdit }) => {
             onRemove={onRemove}
             onEdit={onEdit}
           />
-          {el.type === '内容区域' && el.children && (
+          {el.type === '内容区域' && (
             <ContentAreaDropZone
               parentId={el.id}
-              children={el.children}
+              children={el.children || []}
               onEdit={onEdit}
             />
           )}
@@ -37,13 +37,14 @@ const RenderElements = ({ elements, onRemove, onEdit }) => {
 // 内容区域放置区
 const ContentAreaDropZone = ({ parentId, children, onEdit }) => {
   const { elementStore } = useStore();
+  const isEditing = elementStore.editingContentAreaId === parentId;
 
   const [{ isOver }, drop] = useDrop({
     accept: 'README_ELEMENT',
     drop: (item, monitor) => {
-      // 移除 shallow 检查，确保能正确检测到拖放
-      if (monitor.isOver()) {
-        elementStore.addElement(item, parentId);
+      // 只在编辑状态下允许拖放
+      if (isEditing && monitor.isOver() && item.type !== '内容区域') {
+        elementStore.addElement(item, null, parentId);
       }
     },
     collect: (monitor) => ({
@@ -54,15 +55,23 @@ const ContentAreaDropZone = ({ parentId, children, onEdit }) => {
   return (
     <div
       ref={drop}
-      className={`content-area-drop-zone ${isOver ? 'over' : ''}`}
-      style={{ minHeight: '50px', position: 'relative', zIndex: 10 }}
+      className={`content-area-drop-zone ${isOver && isEditing ? 'over' : ''}`}
+      style={{
+        minHeight: '50px',
+        position: 'relative',
+        zIndex: 10,
+        // 始终显示放置区，以便能看到子元素
+        display: 'block',
+        // 非编辑状态下隐藏提示文本
+        padding: isEditing ? '10px' : '0',
+      }}
     >
       <RenderElements
         elements={children}
         onRemove={elementStore.removeElement}
         onEdit={onEdit}
       />
-      {children.length === 0 && (
+      {children.length === 0 && isEditing && (
         <div className="drop-zone-hint">
           <p>拖放元素到这里</p>
         </div>
@@ -73,13 +82,20 @@ const ContentAreaDropZone = ({ parentId, children, onEdit }) => {
 
 const DropZone = observer(() => {
   const { elementStore } = useStore();
+  const editingContentAreaId = elementStore.editingContentAreaId;
 
   // 主放置区域
   const [{ isOverMain }, dropMain] = useDrop({
     accept: 'README_ELEMENT',
     drop: (item, monitor) => {
       if (monitor.isOver({ shallow: true })) {
-        elementStore.addElement(item);
+        // 如果有内容区域处于编辑状态，则添加到该内容区域
+        if (editingContentAreaId && item.type !== '内容区域') {
+          elementStore.addElement(item, null, editingContentAreaId);
+        } else {
+          // 否则添加到根级别
+          elementStore.addElement(item);
+        }
       }
     },
     collect: (monitor) => ({
