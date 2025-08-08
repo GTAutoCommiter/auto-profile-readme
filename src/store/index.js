@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, observable } from 'mobx';
 
 // 创建元素 store
 class ElementStore {
@@ -24,13 +24,13 @@ class ElementStore {
     }
 
     // 创建新元素
-    const newElement = {
+    const newElement = observable({
       id: Date.now(),
       type: item.type,
       content: item.content,
       column: column,
       layoutId: layoutId
-    };
+    });
 
     // 如果指定了布局ID，添加到对应布局元素之后
     if (layoutId) {
@@ -53,6 +53,23 @@ class ElementStore {
     const element = this.elements.find(el => el.id === id);
     if (element) {
       element.column = column;
+    }
+  };
+
+  // 添加更新元素内容的方法
+  updateElementContent = (id, newContent) => {
+    // 找到元素索引
+    const index = this.elements.findIndex(el => el.id === id);
+    if (index !== -1) {
+      // 创建一个新对象，而不是修改现有对象
+      const updatedElement = {
+        ...this.elements[index],
+        content: newContent
+      };
+      // 替换数组中的元素
+      this.elements[index] = updatedElement;
+      // 创建新数组引用触发更新
+      this.elements = [...this.elements];
     }
   };
 }

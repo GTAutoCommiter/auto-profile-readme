@@ -6,7 +6,7 @@ import '../../styles/Layout.css';
 import ReadmeElement from '../common/ReadmeElement';
 
 // 递归渲染元素及其子元素
-const RenderElements = ({ elements, onRemove }) => {
+const RenderElements = ({ elements, onRemove, onEdit }) => {
   // 确保 elements 是数组
   if (!Array.isArray(elements)) return null;
 
@@ -19,11 +19,13 @@ const RenderElements = ({ elements, onRemove }) => {
             type={el.type}
             content={el.content}
             onRemove={onRemove}
+            onEdit={onEdit}
           />
           {el.type === '内容区域' && el.children && (
             <ContentAreaDropZone
               parentId={el.id}
               children={el.children}
+              onEdit={onEdit}
             />
           )}
         </div>
@@ -33,7 +35,7 @@ const RenderElements = ({ elements, onRemove }) => {
 };
 
 // 内容区域放置区
-const ContentAreaDropZone = ({ parentId, children }) => {
+const ContentAreaDropZone = ({ parentId, children, onEdit }) => {
   const { elementStore } = useStore();
 
   const [{ isOver }, drop] = useDrop({
@@ -53,11 +55,13 @@ const ContentAreaDropZone = ({ parentId, children }) => {
     <div
       ref={drop}
       className={`content-area-drop-zone ${isOver ? 'over' : ''}`}
-      // 添加样式确保放置区可见且可交互
       style={{ minHeight: '50px', position: 'relative', zIndex: 10 }}
     >
-      <RenderElements elements={children} onRemove={elementStore.removeElement} />
-      {/* 添加提示文本，帮助用户识别放置区 */}
+      <RenderElements
+        elements={children}
+        onRemove={elementStore.removeElement}
+        onEdit={onEdit}
+      />
       {children.length === 0 && (
         <div className="drop-zone-hint">
           <p>拖放元素到这里</p>
@@ -86,7 +90,11 @@ const DropZone = observer(() => {
   return (
     <div className="drop-zone">
       <div ref={dropMain} className={`main-drop-area ${isOverMain ? 'over' : ''}`}>
-        <RenderElements elements={elementStore.elements} onRemove={elementStore.removeElement} />
+        <RenderElements
+          elements={elementStore.elements}
+          onRemove={elementStore.removeElement}
+          onEdit={elementStore.updateElementContent}
+        />
       </div>
     </div>
   );

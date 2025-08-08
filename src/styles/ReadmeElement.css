@@ -108,3 +108,37 @@
   background-color: #fff;
   transition: border-color 0.2s;
 }
+
+.readme-element:hover {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.edit-container {
+  width: 100%;
+}
+
+.edit-container input,
+.edit-container textarea {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-buttons button {
+  padding: 4px 8px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.edit-buttons button:hover {
+  background-color: #e0e0e0;
+}

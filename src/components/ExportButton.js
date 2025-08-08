@@ -9,64 +9,62 @@ const ExportButton = () => { // 移除elements参数
     let markdown = '';
     const elements = elementStore.elements; // 从store获取元素
 
-    // 查找所有左右布局元素
-    const layoutElements = elements.filter(el => el.type === '左右布局');
-
-    if (layoutElements.length > 0) {
-      let currentIndex = 0;
-      // 处理布局元素前的元素
-      elements.slice(0, elements.indexOf(layoutElements[0])).forEach(element => {
-        markdown += generateElementMarkdown(element);
+    // 递归生成元素的Markdown
+    const renderElements = (elementsList) => {
+      let result = '';
+      elementsList.forEach(element => {
+        result += generateElementMarkdown(element);
       });
+      return result;
+    };
 
-      // 处理每个布局元素及其内容
-      layoutElements.forEach((layoutElement, layoutIndex) => {
-        const layoutPos = elements.indexOf(layoutElement);
-        currentIndex = layoutPos + 1;
+    // 检查是否有内容区域元素
+    const hasContentArea = elements.some(el => el.type === '内容区域');
 
-        // 找出下一个布局元素的位置，如果没有则为元素总数
-        let nextLayoutPos = elements.length;
-        if (layoutIndex < layoutElements.length - 1) {
-          nextLayoutPos = elements.indexOf(layoutElements[layoutIndex + 1]);
-        }
+    if (hasContentArea) {
+      // 处理包含内容区域的情况
+      elements.forEach(element => {
+        if (element.type === '内容区域') {
+          // 为内容区域创建flex布局
+          markdown += '<div style="display: flex; gap: 20px; margin: 20px 0;">\n';
 
-        // 提取当前布局元素和下一个布局元素之间的元素
-        const elementsBetweenLayouts = elements.slice(layoutPos + 1, nextLayoutPos);
+          // 检查是否有列信息
+          if (element.children && Array.isArray(element.children)) {
+            // 假设内容区域的子元素会被分配到不同列
+            // 这里简单实现为两列，根据实际需求可以调整
+            const leftElements = element.children.filter(el => !el.column || el.column === 'left');
+            const rightElements = element.children.filter(el => el.column === 'right');
 
-        // 分离左右列元素
-        const leftElements = elementsBetweenLayouts.filter(el => !el.column || el.column === 'left');
-        const rightElements = elementsBetweenLayouts.filter(el => el.column === 'right');
+            // 如果没有明确列信息，默认全部放左侧
+            if (leftElements.length === 0 && rightElements.length === 0) {
+              markdown += '  <div style="flex: 1;">\n';
+              markdown += renderElements(element.children);
+              markdown += '  </div>\n';
+            } else {
+              // 左侧列
+              if (leftElements.length > 0) {
+                markdown += '  <div style="flex: 1;">\n';
+                markdown += renderElements(leftElements);
+                markdown += '  </div>\n';
+              }
 
-        // 生成两列布局的Markdown
-        markdown += '<div style="display: flex; gap: 20px;">\n';
-
-        // 左侧列
-        markdown += '  <div style="flex: 1;">\n';
-        leftElements.forEach((element) => {
-          markdown += generateElementMarkdown(element);
-        });
-        markdown += '  </div>\n';
-
-        // 右侧列
-        markdown += '  <div style="flex: 1;">\n';
-        rightElements.forEach((element) => {
-          markdown += generateElementMarkdown(element);
-        });
-        markdown += '  </div>\n';
-
-        markdown += '</div>\n\n';
-      });
-
-      // 处理最后一个布局元素后的元素
-      if (currentIndex < elements.length) {
-        elements.slice(currentIndex).forEach(element => {
-          if (element.type !== '左右布局') {
-            markdown += generateElementMarkdown(element);
+              // 右侧列
+              if (rightElements.length > 0) {
+                markdown += '  <div style="flex: 1;">\n';
+                markdown += renderElements(rightElements);
+                markdown += '  </div>\n';
+              }
+            }
           }
-        });
-      }
+
+          markdown += '</div>\n\n';
+        } else {
+          // 非内容区域元素
+          markdown += generateElementMarkdown(element);
+        }
+      });
     } else {
-      // 没有布局元素，正常生成
+      // 没有内容区域元素，正常生成
       elements.forEach((element) => {
         markdown += generateElementMarkdown(element);
       });

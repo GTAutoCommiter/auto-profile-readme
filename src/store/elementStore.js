@@ -9,6 +9,14 @@ class ElementStore {
     makeAutoObservable(this);
   }
 
+  // 更新元素内容
+  updateElementContent = (id, newContent) => {
+    const element = this.findElementById(id, this.elements);
+    if (element) {
+      element.content = newContent;
+    }
+  }
+
   // 添加元素
   addElement(item, parentId = null) {
     // 创建新元素
