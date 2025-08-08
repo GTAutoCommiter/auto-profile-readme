@@ -1,7 +1,7 @@
 name: Deploy to GitHub Pages
 
 on:
-  push:
+  push: 
     branches: [ main ]
   workflow_dispatch:
 
@@ -15,8 +15,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18.20.8'
-          cache: 'pnpm'
-          cache-dependency-path: 'pnpm-lock.yaml'
+          cache: ''  # 禁用缓存
 
       - name: Install pnpm
         run: npm install -g pnpm
