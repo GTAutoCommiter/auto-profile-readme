@@ -3,6 +3,7 @@ import { makeAutoObservable } from 'mobx';
 class ElementStore {
   // 初始状态
   elements = [];
+  editingContentAreaId = null;
 
   constructor() {
     // 使store可观察
@@ -85,17 +86,64 @@ class ElementStore {
     }
     return result;
   }
+
+  moveElement = (elementId, targetLayoutId = null, targetIndex = -1) => {
+    // 查找要移动的元素
+    let elementToMove = null;
+    let sourceIndex = -1;
+    let sourceLayout = null;
+
+    // 检查是否在顶级元素中
+    sourceIndex = this.elements.findIndex(el => el.id === elementId);
+    if (sourceIndex !== -1) {
+      elementToMove = this.elements[sourceIndex];
+    } else {
+      // 检查是否在某个内容区域中
+      for (const layout of this.elements) {
+        if (layout.type === '内容区域' && layout.children) {
+          const childIndex = layout.children.findIndex(el => el.id === elementId);
+          if (childIndex !== -1) {
+            elementToMove = layout.children[childIndex];
+            sourceLayout = layout;
+            sourceIndex = childIndex;
+            break;
+          }
+        }
+      }
+    }
+
+    if (!elementToMove) return;
+
+    // 从原位置移除
+    if (sourceLayout) {
+      sourceLayout.children.splice(sourceIndex, 1);
+      sourceLayout.children = [...sourceLayout.children];
+    } else {
+      this.elements.splice(sourceIndex, 1);
+    }
+
+    // 添加到新位置
+    if (targetLayoutId) {
+      const targetLayout = this.elements.find(el => el.id === targetLayoutId);
+      if (targetLayout && targetLayout.children) {
+        if (targetIndex !== -1 && targetIndex < targetLayout.children.length) {
+          targetLayout.children.splice(targetIndex, 0, elementToMove);
+        } else {
+          targetLayout.children.push(elementToMove);
+        }
+        targetLayout.children = [...targetLayout.children];
+      }
+    } else {
+      if (targetIndex !== -1 && targetIndex < this.elements.length) {
+        this.elements.splice(targetIndex, 0, elementToMove);
+      } else {
+        this.elements.push(elementToMove);
+      }
+      this.elements = [...this.elements];
+    }
+  };
 }
 
 // 创建并导出store实例
 const elementStore = new ElementStore();
 export default elementStore;
-
-// 删除或注释以下方法
-// 移动元素到指定列
-// moveElementToColumn(id, column) {
-//   const element = this.elements.find(el => el.id === id);
-//   if (element) {
-//     element.column = column;
-//   }
-// }

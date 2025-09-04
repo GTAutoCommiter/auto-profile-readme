@@ -103,3 +103,19 @@
   text-align: center;
   font-size: 14px;
 }
+
+.element-between-drop-zone {
+  height: 10px;
+  width: 100%;
+  margin: 2px 0;
+  transition: background-color 0.2s;
+}
+
+.element-between-drop-zone:hover {
+  background-color: rgba(0, 120, 250, 0.2);
+}
+
+.element-between-drop-zone.over {
+  background-color: rgba(0, 120, 250, 0.4);
+  height: 20px;
+}

@@ -107,6 +107,52 @@ class ElementStore {
       this.elements = [...this.elements];
     }
   };
+
+  // 添加移动元素位置的方法
+  moveElement = (id, newIndex, layoutId = null) => {
+    let targetArray = this.elements;
+    let layoutElement = null; // 在外部作用域声明变量
+  
+    // 如果指定了布局ID，移动的是布局内的元素
+    if (layoutId) {
+      layoutElement = this.elements.find(el => el.id === layoutId); // 修改为赋值而非声明
+      if (layoutElement && layoutElement.children) {
+        targetArray = layoutElement.children;
+      } else {
+        console.error('找不到指定的布局元素或布局元素没有children属性');
+        return;
+      }
+    }
+    
+    // 找到元素当前索引
+    const currentIndex = targetArray.findIndex(el => el.id === id);
+    
+    if (currentIndex === -1) {
+      console.error('找不到要移动的元素');
+      return;
+    }
+    
+    // 确保新索引在有效范围内
+    if (newIndex < 0) newIndex = 0;
+    if (newIndex >= targetArray.length) newIndex = targetArray.length - 1;
+    
+    // 如果索引没变，不需要移动
+    if (currentIndex === newIndex) return;
+    
+    // 复制数组
+    const newArray = [...targetArray];
+    
+    // 移除元素并插入到新位置
+    const [movedElement] = newArray.splice(currentIndex, 1);
+    newArray.splice(newIndex, 0, movedElement);
+    
+    // 更新数组
+    if (layoutId) {
+      layoutElement.children = newArray; // 现在可以正确访问变量
+    } else {
+      this.elements = newArray;
+    }
+  };
 }
 
 // 创建根 store

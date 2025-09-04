@@ -1,13 +1,13 @@
+import { observer } from 'mobx-react-lite';
 import React, { useState } from 'react';
 import { useDrag } from 'react-dnd';
-import '../../styles/ReadmeElement.css';
-import { observer } from 'mobx-react-lite';
 import { useStore } from '../../store'; // 添加导入
+import '../../styles/ReadmeElement.css';
 
 const ReadmeElement = ({ id, type, content, onRemove, onEdit }) => {
   const { elementStore } = useStore(); // 获取store
   const [{ isDragging }, drag] = useDrag({
-    type: 'README_ELEMENT',
+    type: 'EXISTING_ELEMENT',
     item: { id, type, content },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),

@@ -1,26 +1,96 @@
 import { observer } from 'mobx-react-lite';
-import React from 'react';
-import { useDrop } from 'react-dnd';
+import React, { useRef } from 'react';
+import { useDrag, useDrop } from 'react-dnd';
 import { useStore } from '../../store';
 import '../../styles/Layout.css';
 import ReadmeElement from '../common/ReadmeElement';
 
+const SortableElement = ({ el, index, parentId, onRemove, onEdit, children }) => {
+  const ref = useRef(null);
+  const { elementStore } = useStore();
+
+  const [, drop] = useDrop({
+    accept: 'EXISTING_ELEMENT',
+    hover(item, monitor) {
+      if (!ref.current) {
+        return;
+      }
+      const dragIndex = item.index;
+      const hoverIndex = index;
+      const dragParentId = item.parentId;
+      const hoverParentId = parentId;
+
+      if (dragIndex === hoverIndex && dragParentId === hoverParentId) {
+        return;
+      }
+
+      const hoverBoundingRect = ref.current?.getBoundingClientRect();
+      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+      const clientOffset = monitor.getClientOffset();
+      const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+
+      if (dragParentId === hoverParentId) {
+        if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+          return;
+        }
+        if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+          return;
+        }
+      }
+
+      elementStore.moveElement(item.id, hoverParentId, hoverIndex);
+
+      item.index = hoverIndex;
+      item.parentId = hoverParentId;
+    },
+  });
+
+  const [{ isDragging }, drag] = useDrag({
+    type: 'EXISTING_ELEMENT',
+    item: () => ({ id: el.id, index, parentId, type: el.type }),
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
+  drag(drop(ref));
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        opacity: isDragging ? 0.5 : 1,
+        cursor: 'move',
+      }}
+      className={`element-wrapper ${el.type === '内容区域' ? 'content-area' : ''}`}
+    >
+      <ReadmeElement
+        id={el.id}
+        type={el.type}
+        content={el.content}
+        onRemove={onRemove}
+        onEdit={onEdit}
+      />
+      {children}
+    </div>
+  );
+};
+
 // 递归渲染元素及其子元素
-const RenderElements = ({ elements, onRemove, onEdit }) => {
-  // 确保 elements 是数组
+const RenderElements = ({ elements, onRemove, onEdit, parentId = null }) => {
   if (!Array.isArray(elements)) return null;
 
   return (
     <div className="elements-container">
-      {elements.map((el) => (
-        <div key={el.id} className={`element-wrapper ${el.type === '内容区域' ? 'content-area' : ''}`}>
-          <ReadmeElement
-            id={el.id}
-            type={el.type}
-            content={el.content}
-            onRemove={onRemove}
-            onEdit={onEdit}
-          />
+      {elements.map((el, index) => (
+        <SortableElement
+          key={el.id}
+          el={el}
+          index={index}
+          parentId={parentId}
+          onRemove={onRemove}
+          onEdit={onEdit}
+        >
           {el.type === '内容区域' && (
             <ContentAreaDropZone
               parentId={el.id}
@@ -28,27 +98,34 @@ const RenderElements = ({ elements, onRemove, onEdit }) => {
               onEdit={onEdit}
             />
           )}
-        </div>
+        </SortableElement>
       ))}
     </div>
   );
 };
 
-// 内容区域放置区
+// 修改ContentAreaDropZone组件
 const ContentAreaDropZone = ({ parentId, children, onEdit }) => {
   const { elementStore } = useStore();
   const isEditing = elementStore.editingContentAreaId === parentId;
 
   const [{ isOver }, drop] = useDrop({
-    accept: 'README_ELEMENT',
+    accept: ['README_ELEMENT', 'EXISTING_ELEMENT'],
     drop: (item, monitor) => {
-      // 只在编辑状态下允许拖放
-      if (isEditing && monitor.isOver() && item.type !== '内容区域') {
-        elementStore.addElement(item, null, parentId);
+      if (monitor.isOver({ shallow: true })) {
+        if (item.id) {
+          // Move existing element from another container
+          if (item.parentId !== parentId) {
+            elementStore.moveElement(item.id, parentId, children.length);
+          }
+        } else if (isEditing && item.type !== '内容区域') {
+          // Add new element
+          elementStore.addElement(item, parentId);
+        }
       }
     },
     collect: (monitor) => ({
-      isOver: monitor.isOver(),
+      isOver: monitor.isOver({ shallow: true }),
     }),
   });
 
@@ -60,9 +137,7 @@ const ContentAreaDropZone = ({ parentId, children, onEdit }) => {
         minHeight: '50px',
         position: 'relative',
         zIndex: 10,
-        // 始终显示放置区，以便能看到子元素
         display: 'block',
-        // 非编辑状态下隐藏提示文本
         padding: isEditing ? '10px' : '0',
       }}
     >
@@ -70,6 +145,7 @@ const ContentAreaDropZone = ({ parentId, children, onEdit }) => {
         elements={children}
         onRemove={elementStore.removeElement}
         onEdit={onEdit}
+        parentId={parentId}
       />
       {children.length === 0 && isEditing && (
         <div className="drop-zone-hint">
@@ -80,21 +156,28 @@ const ContentAreaDropZone = ({ parentId, children, onEdit }) => {
   );
 };
 
+// 修改DropZone主组件
 const DropZone = observer(() => {
   const { elementStore } = useStore();
   const editingContentAreaId = elementStore.editingContentAreaId;
 
   // 主放置区域
   const [{ isOverMain }, dropMain] = useDrop({
-    accept: 'README_ELEMENT',
+    accept: ['README_ELEMENT', 'EXISTING_ELEMENT'],
     drop: (item, monitor) => {
       if (monitor.isOver({ shallow: true })) {
-        // 如果有内容区域处于编辑状态，则添加到该内容区域
-        if (editingContentAreaId && item.type !== '内容区域') {
-          elementStore.addElement(item, null, editingContentAreaId);
+        if (item.id) {
+          // Move existing element to root level
+          if (item.parentId !== null) {
+            elementStore.moveElement(item.id, null, elementStore.elements.length);
+          }
         } else {
-          // 否则添加到根级别
-          elementStore.addElement(item);
+          // Add new element
+          if (editingContentAreaId && item.type !== '内容区域') {
+            elementStore.addElement(item, editingContentAreaId);
+          } else {
+            elementStore.addElement(item);
+          }
         }
       }
     },
